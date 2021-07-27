@@ -5,4 +5,5 @@ import ru.itis.springbootsimbirsoft.domain.entity.Accounts;
 import ru.itis.springbootsimbirsoft.domain.entity.Rooms;
 
 public interface RoomRepository extends JpaRepository<Rooms, Long> {
+    Rooms findFirstById(Long id);
 }

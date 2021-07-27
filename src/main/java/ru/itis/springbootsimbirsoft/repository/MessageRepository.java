@@ -5,4 +5,5 @@ import ru.itis.springbootsimbirsoft.domain.entity.Accounts;
 import ru.itis.springbootsimbirsoft.domain.entity.Messages;
 
 public interface MessageRepository extends JpaRepository<Messages, Long> {
+    Messages findFirstByText(String text);
 }
