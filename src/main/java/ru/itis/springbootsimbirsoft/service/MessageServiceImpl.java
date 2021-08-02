@@ -3,17 +3,11 @@ package ru.itis.springbootsimbirsoft.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import ru.itis.springbootsimbirsoft.domain.entity.Accounts;
 import ru.itis.springbootsimbirsoft.domain.entity.Messages;
-import ru.itis.springbootsimbirsoft.domain.enums.StateActive;
-import ru.itis.springbootsimbirsoft.domain.enums.StateConfirmed;
-import ru.itis.springbootsimbirsoft.domain.enums.StateRole;
-import ru.itis.springbootsimbirsoft.repository.AccountRepository;
 import ru.itis.springbootsimbirsoft.repository.MessageRepository;
 
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 @Component
 public class MessageServiceImpl implements MessageService {

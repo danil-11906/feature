@@ -85,4 +85,77 @@ public class AccountServiceImpl implements AccountService {
     public void deleteUser (Long id){
         accountRepository.delete(accountRepository.findFirstById(id));
     }
+
+    @Override
+    public void blockUser(Long id){
+        Accounts form = accountRepository.findFirstById(id);
+        Accounts newUser = Accounts.builder()
+                .email(form.getEmail())
+                .name(form.getName())
+                .surname(form.getSurname())
+                .password(form.getPassword())
+                .phone(form.getPhone())
+                .role(form.getRole())
+                .stateActive(StateActive.BANNED)
+                .stateConfirmed(form.getStateConfirmed())
+                .confirmCode(form.getConfirmCode())
+                .build();
+
+        accountRepository.save(newUser);
+    }
+
+    @Override
+    public void unBlockUser(Long id) {
+        Accounts form = accountRepository.findFirstById(id);
+        Accounts newUser = Accounts.builder()
+                .email(form.getEmail())
+                .name(form.getName())
+                .surname(form.getSurname())
+                .password(form.getPassword())
+                .phone(form.getPhone())
+                .role(form.getRole())
+                .stateActive(StateActive.ACTIVE)
+                .stateConfirmed(form.getStateConfirmed())
+                .confirmCode(form.getConfirmCode())
+                .build();
+
+        accountRepository.save(newUser);
+    }
+
+    @Override
+    public void changeModer(Long id) {
+        Accounts form = accountRepository.findFirstById(id);
+        Accounts newUser = Accounts.builder()
+                .email(form.getEmail())
+                .name(form.getName())
+                .surname(form.getSurname())
+                .password(form.getPassword())
+                .phone(form.getPhone())
+                .role(StateRole.MODERATOR)
+                .stateActive(form.getStateActive())
+                .stateConfirmed(form.getStateConfirmed())
+                .confirmCode(form.getConfirmCode())
+                .build();
+
+        accountRepository.save(newUser);
+    }
+
+    @Override
+    public void deleteModer(Long id) {
+        Accounts form = accountRepository.findFirstById(id);
+        Accounts newUser = Accounts.builder()
+                .email(form.getEmail())
+                .name(form.getName())
+                .surname(form.getSurname())
+                .password(form.getPassword())
+                .phone(form.getPhone())
+                .role(StateRole.USER)
+                .stateActive(form.getStateActive())
+                .stateConfirmed(form.getStateConfirmed())
+                .confirmCode(form.getConfirmCode())
+                .build();
+
+        accountRepository.save(newUser);
+    }
+
 }

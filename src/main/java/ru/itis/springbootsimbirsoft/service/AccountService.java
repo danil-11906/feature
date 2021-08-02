@@ -15,4 +15,12 @@ public interface AccountService {
     void updateUSer(Accounts form);
 
     void deleteUser(Long id);
+
+    void blockUser(Long id);
+
+    void unBlockUser(Long id);
+
+    void changeModer(Long id);
+
+    void deleteModer(Long id);
 }
