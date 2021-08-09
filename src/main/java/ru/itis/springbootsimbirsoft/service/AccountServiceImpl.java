@@ -87,75 +87,86 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void blockUser(Long id){
-        Accounts form = accountRepository.findFirstById(id);
-        Accounts newUser = Accounts.builder()
-                .email(form.getEmail())
-                .name(form.getName())
-                .surname(form.getSurname())
-                .password(form.getPassword())
-                .phone(form.getPhone())
-                .role(form.getRole())
-                .stateActive(StateActive.BANNED)
-                .stateConfirmed(form.getStateConfirmed())
-                .confirmCode(form.getConfirmCode())
-                .build();
+    public void blockUser(Long id, Long adminId){
+        if ((accountRepository.findFirstById(adminId).getRole()==StateRole.ADMIN)||
+                (accountRepository.findFirstById(adminId).getRole()==StateRole.MODERATOR)) {
+            Accounts form = accountRepository.findFirstById(id);
+            Accounts newUser = Accounts.builder()
+                    .email(form.getEmail())
+                    .name(form.getName())
+                    .surname(form.getSurname())
+                    .password(form.getPassword())
+                    .phone(form.getPhone())
+                    .role(form.getRole())
+                    .stateActive(StateActive.BANNED)
+                    .stateConfirmed(form.getStateConfirmed())
+                    .confirmCode(form.getConfirmCode())
+                    .build();
 
-        accountRepository.save(newUser);
+            accountRepository.save(newUser);
+        }
     }
 
     @Override
-    public void unBlockUser(Long id) {
-        Accounts form = accountRepository.findFirstById(id);
-        Accounts newUser = Accounts.builder()
-                .email(form.getEmail())
-                .name(form.getName())
-                .surname(form.getSurname())
-                .password(form.getPassword())
-                .phone(form.getPhone())
-                .role(form.getRole())
-                .stateActive(StateActive.ACTIVE)
-                .stateConfirmed(form.getStateConfirmed())
-                .confirmCode(form.getConfirmCode())
-                .build();
+    public void unBlockUser(Long id, Long adminId) {
+        if ((accountRepository.findFirstById(adminId).getRole()==StateRole.ADMIN)||
+                (accountRepository.findFirstById(adminId).getRole()==StateRole.MODERATOR)) {
+            Accounts form = accountRepository.findFirstById(id);
+            Accounts newUser = Accounts.builder()
+                    .email(form.getEmail())
+                    .name(form.getName())
+                    .surname(form.getSurname())
+                    .password(form.getPassword())
+                    .phone(form.getPhone())
+                    .role(form.getRole())
+                    .stateActive(StateActive.ACTIVE)
+                    .stateConfirmed(form.getStateConfirmed())
+                    .confirmCode(form.getConfirmCode())
+                    .build();
 
-        accountRepository.save(newUser);
+            accountRepository.save(newUser);
+        }
     }
 
     @Override
-    public void changeModer(Long id) {
-        Accounts form = accountRepository.findFirstById(id);
-        Accounts newUser = Accounts.builder()
-                .email(form.getEmail())
-                .name(form.getName())
-                .surname(form.getSurname())
-                .password(form.getPassword())
-                .phone(form.getPhone())
-                .role(StateRole.MODERATOR)
-                .stateActive(form.getStateActive())
-                .stateConfirmed(form.getStateConfirmed())
-                .confirmCode(form.getConfirmCode())
-                .build();
+    public void changeModer(String login, Long adminId) {
+        if (accountRepository.findFirstById(adminId).getRole()==StateRole.ADMIN) {
+            Accounts form = accountRepository.findFirstByEmail(login);
+            Accounts newUser = Accounts.builder()
+                    .email(form.getEmail())
+                    .name(form.getName())
+                    .surname(form.getSurname())
+                    .password(form.getPassword())
+                    .phone(form.getPhone())
+                    .role(StateRole.MODERATOR)
+                    .stateActive(form.getStateActive())
+                    .stateConfirmed(form.getStateConfirmed())
+                    .confirmCode(form.getConfirmCode())
+                    .build();
 
-        accountRepository.save(newUser);
+            accountRepository.save(newUser);
+        }
     }
 
     @Override
-    public void deleteModer(Long id) {
-        Accounts form = accountRepository.findFirstById(id);
-        Accounts newUser = Accounts.builder()
-                .email(form.getEmail())
-                .name(form.getName())
-                .surname(form.getSurname())
-                .password(form.getPassword())
-                .phone(form.getPhone())
-                .role(StateRole.USER)
-                .stateActive(form.getStateActive())
-                .stateConfirmed(form.getStateConfirmed())
-                .confirmCode(form.getConfirmCode())
-                .build();
+    public void deleteModer(String name, Long adminId) {
+        if (accountRepository.findFirstById(adminId).getRole()==StateRole.ADMIN) {
 
-        accountRepository.save(newUser);
+            Accounts form = accountRepository.findFirstByEmail(name);
+            Accounts newUser = Accounts.builder()
+                    .email(form.getEmail())
+                    .name(form.getName())
+                    .surname(form.getSurname())
+                    .password(form.getPassword())
+                    .phone(form.getPhone())
+                    .role(StateRole.USER)
+                    .stateActive(form.getStateActive())
+                    .stateConfirmed(form.getStateConfirmed())
+                    .confirmCode(form.getConfirmCode())
+                    .build();
+
+            accountRepository.save(newUser);
+        }
     }
 
 }

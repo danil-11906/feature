@@ -5,4 +5,5 @@ import ru.itis.springbootsimbirsoft.domain.entity.Accounts;
 
 public interface AccountRepository extends JpaRepository<Accounts, Long> {
     Accounts findFirstById(Long id);
+    Accounts findFirstByEmail(String email);
 }

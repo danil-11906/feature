@@ -7,11 +7,15 @@ import java.util.List;
 public interface RoomService {
     List<Rooms> getAllRooms();
 
-    void createRoom(Rooms form);
+    void createRoom(Rooms form, Long author);
+
+    void addAccount(Long accountId, Long authorId);
+
+    void deleteAccount(String name, Long authorId);
 
     Rooms getRoom(Long id);
 
-    void updateRoom(Rooms form);
+    void updateRoom(Rooms form, Long authorId);
 
-    void deleteRoom(Long id);
+    void deleteRoom(String name);
 }

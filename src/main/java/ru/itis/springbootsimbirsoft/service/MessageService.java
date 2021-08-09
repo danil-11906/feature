@@ -7,11 +7,11 @@ import java.util.List;
 public interface MessageService {
     List<Messages> getAllMessages();
 
-    void writeMessage(Messages form);
+    void writeMessage(Messages form, Long author);
 
     Messages getMessage(String text);
 
     void updateMessage(Messages form);
 
-    void deleteMessage(String text);
+    void deleteMessage(String text, Long adminId);
 }

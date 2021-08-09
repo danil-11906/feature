@@ -16,11 +16,11 @@ public interface AccountService {
 
     void deleteUser(Long id);
 
-    void blockUser(Long id);
+    void blockUser(Long id, Long adminId);
 
-    void unBlockUser(Long id);
+    void unBlockUser(Long id, Long adminId);
 
-    void changeModer(Long id);
+    void changeModer(String login, Long adminId);
 
-    void deleteModer(Long id);
+    void deleteModer(String name, Long adminId);
 }
