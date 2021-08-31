@@ -9,6 +9,7 @@ import ru.itis.springbootsimbirsoft.domain.enums.StateConfirmed;
 import ru.itis.springbootsimbirsoft.domain.enums.StateRole;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -52,6 +53,13 @@ public class  Accounts {
     }
 
     @Transient
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
-    private Set<Messages> message;
+    @OneToMany(mappedBy = "account", fetch = FetchType.EAGER)
+    private List<Messages> messages;
+
+    @Transient
+    @OneToMany(mappedBy = "creator", fetch = FetchType.EAGER)
+    private Set<Rooms> roomCreate;
+
+    @ManyToMany(mappedBy = "users")
+    private List<Rooms> rooms;
 }

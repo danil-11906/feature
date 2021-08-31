@@ -9,11 +9,15 @@ import ru.itis.springbootsimbirsoft.domain.enums.StateConfirmed;
 import ru.itis.springbootsimbirsoft.domain.enums.StateRole;
 import ru.itis.springbootsimbirsoft.repository.AccountRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @Component
 public class AccountServiceImpl implements AccountService {
+
+    @Autowired
+    private SmsService smsService;
 
     @Autowired
     private AccountRepository accountRepository;
@@ -22,8 +26,19 @@ public class AccountServiceImpl implements AccountService {
     private PasswordEncoder passwordEncoder;
 
     @Override
-    public List<Accounts> getAllUsers() {
+    public List<Accounts> getAllUser() {
         return accountRepository.findAll();
+    }
+
+    @Override
+    public List<Accounts> getAllUsers(Long id) {
+        List<Accounts> accountsList = accountRepository.findAll();
+        for (int i = 0; i < accountsList.size(); i++) {
+            if (accountsList.get(i).getId().equals(id)) {
+                accountsList.remove(i);
+            }
+        }
+        return accountsList;
     }
 
     @Override
@@ -41,6 +56,7 @@ public class AccountServiceImpl implements AccountService {
                 .build();
 
         accountRepository.save(newUser);
+        smsService.sendSms(form.getPhone(), "Вы зарегестированы");
     }
 
     @Override

@@ -3,11 +3,14 @@ package ru.itis.springbootsimbirsoft.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import ru.itis.springbootsimbirsoft.domain.entity.Accounts;
 import ru.itis.springbootsimbirsoft.domain.entity.Messages;
+import ru.itis.springbootsimbirsoft.domain.entity.Rooms;
 import ru.itis.springbootsimbirsoft.domain.enums.StateActive;
 import ru.itis.springbootsimbirsoft.domain.enums.StateRole;
 import ru.itis.springbootsimbirsoft.repository.AccountRepository;
 import ru.itis.springbootsimbirsoft.repository.MessageRepository;
+import ru.itis.springbootsimbirsoft.repository.RoomRepository;
 
 import java.util.Date;
 import java.util.List;
@@ -22,6 +25,9 @@ public class MessageServiceImpl implements MessageService {
     private MessageRepository messageRepository;
 
     @Autowired
+    private RoomRepository roomRepository;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Override
@@ -30,18 +36,24 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public void writeMessage(Messages form, Long author) {
-        if (accountRepository.findFirstById(author).getStateActive() == StateActive.ACTIVE) {
-            Date date = new Date();
-            Messages newMessage = Messages.builder()
-                    .account(form.getAccount())
-                    .date(date)
-                    .room(form.getRoom())
-                    .text(form.getText())
-                    .build();
+    public Messages writeMessage(Messages form, Long author, Long id) {
+        Date date = new Date();
+        Accounts account = accountRepository.findFirstById(author);
+        Rooms room = roomRepository.findFirstById(id);
+            if (accountRepository.findFirstById(author).getStateActive() == StateActive.ACTIVE) {
+                Messages newMessage = Messages.builder()
+                        .account(account)
+                        .date(date)
+                        .room(room)
+                        .text(form.getText())
+                        .build();
 
-            messageRepository.save(newMessage);
-        }
+                messageRepository.save(newMessage);
+                return newMessage;
+            }
+            else {
+                return Messages.builder().build();
+            }
     }
 
     @Override

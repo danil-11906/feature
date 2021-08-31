@@ -3,16 +3,18 @@ package ru.itis.springbootsimbirsoft.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import ru.itis.springbootsimbirsoft.domain.entity.Accounts;
 import ru.itis.springbootsimbirsoft.domain.entity.Messages;
 import ru.itis.springbootsimbirsoft.domain.entity.Rooms;
 import ru.itis.springbootsimbirsoft.domain.enums.StateActive;
 import ru.itis.springbootsimbirsoft.domain.enums.StateRole;
+import ru.itis.springbootsimbirsoft.domain.enums.StateType;
 import ru.itis.springbootsimbirsoft.repository.AccountRepository;
 import ru.itis.springbootsimbirsoft.repository.MessageRepository;
 import ru.itis.springbootsimbirsoft.repository.RoomRepository;
 
-import java.util.Date;
-import java.util.List;
+import java.io.IOException;
+import java.util.*;
 
 @Component
 public class RoomServiceImpl implements RoomService {
@@ -24,19 +26,34 @@ public class RoomServiceImpl implements RoomService {
     private RoomRepository roomRepository;
 
     @Autowired
+    private MessageRepository messageRepository;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Override
-    public List<Rooms> getAllRooms() {
-        return roomRepository.findAll();
+    public List<Accounts> getRoomsUsers(String name) {
+        Rooms room = roomRepository.findFirstByName(name);
+        return room.getUsers();
     }
 
     @Override
-    public void createRoom(Rooms form, Long author) {
+    public List<Rooms> getAllRooms(Long id) {
+        Accounts account = accountRepository.findFirstById(id);
+        return account.getRooms();
+    }
+
+    @Override
+    public void createRoom(Rooms form, Long author, StateType type) {
         if (accountRepository.findFirstById(author).getStateActive() == StateActive.ACTIVE) {
+            Accounts creator = accountRepository.findFirstById(author);
+            List<Accounts> list = new ArrayList<Accounts>();
+            list.add(creator);
             Rooms newRoom = Rooms.builder()
                     .name(form.getName())
-                    .stateType(form.getStateType())
+                    .stateType(type)
+                    .creator(creator)
+                    .users(list)
                     .build();
 
             roomRepository.save(newRoom);
@@ -44,9 +61,20 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public void addAccount(Long accountId, Long authorId) {
+    public void addAccount(Long accountId, Long authorId, String name) {
+        Rooms roomId = roomRepository.findFirstByName(name);
         if (accountRepository.findFirstById(authorId).getStateActive() == StateActive.ACTIVE) {
-            System.out.println(accountId);
+            Accounts creator = accountRepository.findFirstById(authorId);
+            List<Accounts> list = roomId.getUsers();
+            list.add(accountRepository.findFirstById(accountId));
+            Rooms newRoom = Rooms.builder()
+                    .id(roomId.getId())
+                    .name(roomId.getName())
+                    .stateType(roomId.getStateType())
+                    .creator(creator)
+                    .users(list)
+                    .build();
+            roomRepository.save(newRoom);
         }
     }
 
@@ -59,7 +87,12 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public Rooms getRoom(Long id) {
+    public Rooms getRoom(String name) {
+        return roomRepository.findFirstByName(name);
+    }
+
+    @Override
+    public Rooms getRoomOfId(Long id) {
         return roomRepository.findFirstById(id);
     }
 
@@ -79,5 +112,27 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public void deleteRoom (String name){
         roomRepository.delete(roomRepository.findFirstByName(name));
+    }
+
+    @Override
+    public List<Messages> getAllMessagesOfRoom(String name) {
+        Date date = new Date(1212121212121L);
+        Rooms room = roomRepository.findFirstByName(name);
+        Long id = room.getId();
+        List<Messages> list = messageRepository.findAllByRoom_Id(id);
+        if(list.size()==0) {
+            System.out.println("*");
+            System.out.println(date);
+            System.out.println("*");
+            Messages newMes = Messages.builder()
+                    .id(id)
+                    .date(date)
+                    .account(Accounts.builder().name("no message").build())
+                    .text("you can write message")
+                    .build();
+            list.add(newMes);
+        }
+        return list;
+
     }
 }

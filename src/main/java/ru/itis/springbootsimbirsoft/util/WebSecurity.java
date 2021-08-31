@@ -19,6 +19,12 @@ import javax.sql.DataSource;
 public class WebSecurity extends WebSecurityConfigurerAdapter {
 
     @Autowired
+    @Qualifier("custom")
+    private UserDetailsService userDetailsService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
     private DataSource dataSource;
 
     @Override
@@ -29,37 +35,41 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 
                 .antMatchers("/profile").authenticated()
 
-                .antMatchers("/users").hasAuthority("ADMIN")
-
-                .antMatchers("/files/**").permitAll()
-
-                .antMatchers("/services").hasAuthority("ADMIN")
-
-                .antMatchers("/doctors").permitAll()
-
-                .antMatchers("/papers/service/search").permitAll()
-
-                .antMatchers("/list").permitAll()
-
-                .antMatchers("/addDoc").hasAuthority("ADMIN")
-                .antMatchers("/bag").authenticated()
+//                .antMatchers("/users").hasAuthority("ADMIN")
+//
+//                .antMatchers("/files/**").permitAll()
+//
+//                .antMatchers("/services").hasAuthority("ADMIN")
+//
+//                .antMatchers("/doctors").permitAll()
+//
+//                .antMatchers("/papers/service/search").permitAll()
+//
+//                .antMatchers("/list").permitAll()
+//
+//                .antMatchers("/addDoc").hasAuthority("ADMIN")
+//                .antMatchers("/bag").authenticated()
 
                 .and()
                 .formLogin()
                 .loginPage("/signIn")
                 .usernameParameter("email")
-                .defaultSuccessUrl("/profile")
+                .defaultSuccessUrl("/list")
                 .failureUrl("/signIn?error")
                 .and()
-                .exceptionHandling().accessDeniedPage("/profile")
-                .and()
-                .logout()
-                .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET"))
-                .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID")
-                .and()
-                .rememberMe()
-                .rememberMeParameter("remember-me").tokenRepository(persistentTokenRepository());
+                .exceptionHandling().accessDeniedPage("/profile");
+//                .and()
+//                .logout()
+//                .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET"))
+//                .invalidateHttpSession(true)
+//                .deleteCookies("JSESSIONID")
+//                .and()
+//                .rememberMe()
+//                .rememberMeParameter("remember-me").tokenRepository(persistentTokenRepository());
+    }
+
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
     }
 
     @Bean

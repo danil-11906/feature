@@ -7,7 +7,7 @@ import java.util.List;
 public interface MessageService {
     List<Messages> getAllMessages();
 
-    void writeMessage(Messages form, Long author);
+    Messages writeMessage(Messages form, Long author, Long id);
 
     Messages getMessage(String text);
 

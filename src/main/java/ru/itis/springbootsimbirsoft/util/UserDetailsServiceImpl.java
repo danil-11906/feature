@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import ru.itis.springbootsimbirsoft.domain.entity.Accounts;
 import ru.itis.springbootsimbirsoft.repository.AccountRepository;
 
-@Component("customUserDetailsService")
+@Component("custom")
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
@@ -20,6 +20,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException("User not found");
         }
-        return new ru.itis.springbootsimbirsoft.util.UserDetailsImpl(user);
+        return new UserDetailsImpl(user);
     }
 }
