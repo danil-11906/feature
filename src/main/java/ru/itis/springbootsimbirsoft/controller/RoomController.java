@@ -11,6 +11,7 @@ import ru.itis.springbootsimbirsoft.domain.entity.Messages;
 import ru.itis.springbootsimbirsoft.domain.entity.Rooms;
 import ru.itis.springbootsimbirsoft.domain.enums.StateActive;
 import ru.itis.springbootsimbirsoft.domain.enums.StateType;
+import ru.itis.springbootsimbirsoft.repository.RoomRepository;
 import ru.itis.springbootsimbirsoft.service.AccountService;
 import ru.itis.springbootsimbirsoft.service.MessageService;
 import ru.itis.springbootsimbirsoft.service.RoomService;
@@ -30,6 +31,9 @@ public class RoomController {
 
     @Autowired
     private MessageService messageService;
+
+    @Autowired
+    private RoomRepository roomRepository;
 
     @GetMapping("/list")
     public Object getUsersPage(Model model, @AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -99,5 +103,70 @@ public class RoomController {
     public ResponseEntity<List<Messages>> getAllMessage(@PathVariable("room") String name){
         System.out.println("************");
         return ResponseEntity.ok(roomService.getAllMessagesOfRoom(name));
+    }
+
+    @GetMapping("/addUser/{room}")
+    public String addUser(@PathVariable("room") Long id,
+                          Model model) {
+        model.addAttribute("usersList", accountService.getUsersForPut(id));
+        model.addAttribute("room", roomRepository.findFirstById(id));
+        return "add_users_page";
+    }
+
+    @PostMapping("/addUser/{room}")
+    public String addUserForRooms(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                  @RequestParam("changed") String changed,
+                                  @PathVariable("room") Long id) {
+        String name = roomRepository.findFirstById(id).getName();
+        String[] checked = changed.split(",");
+        List<Accounts> accountsList = accountService.getAllUser();
+        for (Accounts accounts : accountsList) {
+            for (String string : checked) {
+                if (string.equals(accounts.getName())) {
+                    roomService.addAccount(accounts.getId(), userDetails.getId(), name);
+                }
+            }
+        }
+        return "redirect:/sms/" + name;
+    }
+
+    @PostMapping("/deleteUser/{room}")
+    public String deleteUserFromRooms(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                  @RequestParam("deleted") String changed,
+                                  @PathVariable("room") Long id) {
+        String name = roomRepository.findFirstById(id).getName();
+        String[] checked = changed.split(",");
+        List<Accounts> accountsList = accountService.getAllUser();
+        for (Accounts accounts : accountsList) {
+            for (String string : checked) {
+                if (string.equals(accounts.getName())) {
+                    roomService.deleteAccount(accounts.getId(), userDetails.getId(), id);
+                }
+            }
+        }
+        return "redirect:/sms/" + name;
+    }
+
+    @GetMapping("/renameRoom/{room}")
+    public String getRenamePage(@PathVariable("room") Long id,
+                                Model model) {
+        model.addAttribute("roomsList", roomRepository.findFirstById(id));
+        return "rename_room_page";
+    }
+
+    @PostMapping("/renameRoom/{room}")
+    public String renameRoomPost(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                  @PathVariable("room") Long id,
+                                 Rooms room) {
+        roomService.updateRoom(room, userDetails.getId(), id);
+        String name = roomRepository.findFirstById(id).getName();
+        return "redirect:/sms/" + name;
+    }
+
+    @PostMapping("/deleteRoom/{room}")
+    public String deleteRoomPost(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                 @PathVariable("room") Long id) {
+        roomService.deleteRoom(roomRepository.findFirstById(id).getName(), userDetails.getId());
+        return "redirect:/list";
     }
 }

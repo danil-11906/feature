@@ -8,6 +8,7 @@ import ru.itis.springbootsimbirsoft.domain.enums.StateActive;
 import ru.itis.springbootsimbirsoft.domain.enums.StateConfirmed;
 import ru.itis.springbootsimbirsoft.domain.enums.StateRole;
 import ru.itis.springbootsimbirsoft.repository.AccountRepository;
+import ru.itis.springbootsimbirsoft.repository.RoomRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,31 @@ public class AccountServiceImpl implements AccountService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private RoomRepository roomRepository;
+
+    @Override
+    public List<Accounts> getUsersForPut(Long id) {
+        List<Accounts> finalList = new ArrayList<Accounts>();
+        List<Accounts> accountsList = accountRepository.findAll();
+        int[] list = new int[accountsList.size()+1];
+        List<Accounts> users = roomRepository.findFirstById(id).getUsers();
+        for (Accounts accounts : accountsList) {
+            for (Accounts usersRoom : users) {
+                if (usersRoom.getId().equals(accounts.getId())) {
+                    list[Math.toIntExact(accounts.getId())] = 1;
+                    break;
+                }
+            }
+        }
+        for (Accounts accounts : accountsList) {
+            if (list[Math.toIntExact(accounts.getId())] != 1) {
+                finalList.add(accounts);
+            }
+        }
+        return finalList;
+    }
 
     @Override
     public List<Accounts> getAllUser() {

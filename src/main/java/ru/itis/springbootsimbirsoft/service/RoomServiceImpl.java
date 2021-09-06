@@ -64,14 +64,13 @@ public class RoomServiceImpl implements RoomService {
     public void addAccount(Long accountId, Long authorId, String name) {
         Rooms roomId = roomRepository.findFirstByName(name);
         if (accountRepository.findFirstById(authorId).getStateActive() == StateActive.ACTIVE) {
-            Accounts creator = accountRepository.findFirstById(authorId);
             List<Accounts> list = roomId.getUsers();
             list.add(accountRepository.findFirstById(accountId));
             Rooms newRoom = Rooms.builder()
                     .id(roomId.getId())
                     .name(roomId.getName())
                     .stateType(roomId.getStateType())
-                    .creator(creator)
+                    .creator(roomId.getCreator())
                     .users(list)
                     .build();
             roomRepository.save(newRoom);
@@ -79,10 +78,26 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public void deleteAccount(String name, Long authorId) {
+    public void deleteAccount(Long userId, Long authorId, Long roomId) {
         if ((accountRepository.findFirstById(authorId).getRole() == StateRole.ADMIN)||
-        (accountRepository.findFirstById(authorId).getRole() == StateRole.USER)) {
-            System.out.println(name);
+        (roomRepository.findFirstById(roomId).getCreator().getStateActive() == StateActive.ACTIVE)) {
+            Accounts user = accountRepository.findFirstById(userId);
+            Rooms room = roomRepository.findFirstById(roomId);
+            List<Accounts> accountsList = room.getUsers();
+            for (int i = 0; i < accountsList.size(); i++) {
+                if (accountsList.get(i).getId().equals(user.getId())) {
+                    accountsList.remove(i);
+                    break;
+                }
+            }
+            Rooms newRoom = Rooms.builder()
+                    .id(room.getId())
+                    .name(room.getName())
+                    .stateType(room.getStateType())
+                    .creator(room.getCreator())
+                    .users(accountsList)
+                    .build();
+            roomRepository.save(newRoom);
         }
     }
 
@@ -97,21 +112,45 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public void updateRoom(Rooms form, Long authorId) {
-        if ((accountRepository.findFirstById(authorId).getRole() == StateRole.ADMIN) ||
-                (accountRepository.findFirstById(authorId).getRole() == StateRole.USER)) {
+    public void updateRoom(Rooms form, Long authorId, Long roomId) {
+        if ((accountRepository.findFirstById(authorId).getRole() == StateRole.ADMIN)||
+                (roomRepository.findFirstById(roomId).getCreator().getId().equals(authorId))) {
+            Rooms room = roomRepository.findFirstById(roomId);
             Rooms newRoom = Rooms.builder()
+                    .id(room.getId())
                     .name(form.getName())
-                    .stateType(form.getStateType())
+                    .stateType(room.getStateType())
+                    .creator(room.getCreator())
+                    .users(room.getUsers())
                     .build();
-
             roomRepository.save(newRoom);
         }
     }
 
     @Override
-    public void deleteRoom (String name){
-        roomRepository.delete(roomRepository.findFirstByName(name));
+    public void updateRoom(Rooms form, Long authorId, String roomName) {
+        if ((accountRepository.findFirstById(authorId).getRole() == StateRole.ADMIN)||
+                (roomRepository.findFirstByName(roomName).getCreator().getId().equals(authorId))) {
+            Rooms room = roomRepository.findFirstByName(roomName);
+            Rooms newRoom = Rooms.builder()
+                    .id(room.getId())
+                    .name(form.getName())
+                    .stateType(room.getStateType())
+                    .creator(room.getCreator())
+                    .users(room.getUsers())
+                    .build();
+            roomRepository.save(newRoom);
+        }
+    }
+
+    @Override
+    public void deleteRoom (String name, Long id){
+        if ((accountRepository.findFirstById(id).getRole() == StateRole.ADMIN)||
+                (roomRepository.findFirstByName(name).getCreator().getId().equals(id))) {
+            if (accountRepository.findFirstById(id).getStateActive() == StateActive.ACTIVE) {
+                roomRepository.delete(roomRepository.findFirstByName(name));
+            }
+        }
     }
 
     @Override

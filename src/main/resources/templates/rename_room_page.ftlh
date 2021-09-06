@@ -1,12 +1,12 @@
 <!doctype html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-    <link rel="stylesheet" href="/css/menu.css">
+    <title>SIGN IN</title>
+    <link rel="stylesheet" href="/css/sign.css">
 </head>
 <body>
 
@@ -22,7 +22,7 @@
 <#--                    </svg>-->
 <#--                    <span>МОЙ ПРОФИЛЬ</span>-->
 <#--                </a></li>-->
-<#--            <li><a class="nav-menu" href="/profile">ПРОФИЛЬ</a></li>-->
+<#--            <li><a class="nav-menu" href="/signUp">РЕГИСТРАЦИЯ</a></li>-->
 <#--            <li><a class="nav-menu" href="/list">СПИСОК УСЛУГ</a></li>-->
 <#--            <li><a class="nav-menu" href="/doctors">ВРАЧИ</a></li>-->
 <#--        </nav>-->
@@ -36,24 +36,15 @@
 <#--    </header>-->
 <#--</div>-->
 
-
-
-<div>
-    <li><a class="nav-menu" href="/createRoom">Создать комнату</a></li>-->
-    <table>
-        <tr>
-            <th>id</th>
-            <th>name of Rooms</th>
-        </tr>
-        <tr>
-            <td><a href="/chatBot">Чат-Бот</a></td>
-        </tr>
-        <#list roomsList as rooms>
-            <tr>
-                <td><a href="/sms/${rooms.name}">${rooms.name}</a></td>
-            </tr>
-        </#list>
-    </table>
-</div>
+<form action="/renameRoom/${roomsList.id}" method="post">
+    <div class="container">
+        <p>Укажите новое имя комнаты</p>
+        <hr>
+        <label><b>Name</b></label>
+        <input type="text" name="name" placeholder="Name">
+        <hr>
+        <button class="button" type="submit">Send</button>
+    </div>
+</form>
 </body>
 </html>

@@ -41,8 +41,8 @@ public class AccountController {
         return "profile";
     }
 
-//    @GetMapping("/")
-//    public String getStartPage() {
-//        return "sign_in_page";
-//    }
+    @GetMapping("/")
+    public String getStartPage() {
+        return "sign_in_page";
+    }
 }

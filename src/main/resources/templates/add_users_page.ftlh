@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ru">
+<html lang="ru" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -39,21 +39,17 @@
 
 
 <div>
-    <li><a class="nav-menu" href="/createRoom">Создать комнату</a></li>-->
-    <table>
-        <tr>
-            <th>id</th>
-            <th>name of Rooms</th>
-        </tr>
-        <tr>
-            <td><a href="/chatBot">Чат-Бот</a></td>
-        </tr>
-        <#list roomsList as rooms>
-            <tr>
-                <td><a href="/sms/${rooms.name}">${rooms.name}</a></td>
-            </tr>
-        </#list>
-    </table>
+    <h1>Выберите ползователей</h1>
+    <form action="/addUser/${room.id}" method="post">
+        <div class="users" id="users">
+            <#list usersList as users>
+                <input type="checkbox" name="changed" value="${users.name}">
+                <label>${users.name}</label>
+                <br>
+            </#list>
+        </div>
+        <button class="button" type="submit">Send</button>
+    </form>
 </div>
 </body>
 </html>

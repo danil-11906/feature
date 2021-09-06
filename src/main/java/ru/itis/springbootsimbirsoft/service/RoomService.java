@@ -16,15 +16,17 @@ public interface RoomService {
 
     void addAccount(Long accountId, Long authorId, String name);
 
-    void deleteAccount(String name, Long authorId);
+    void deleteAccount(Long userId, Long authorId, Long roomId);
 
     Rooms getRoom(String name);
 
     Rooms getRoomOfId(Long id);
 
-    void updateRoom(Rooms form, Long authorId);
+    void updateRoom(Rooms form, Long authorId, Long roomId);
 
-    void deleteRoom(String name);
+    void updateRoom(Rooms form, Long authorId, String roomName);
+
+    void deleteRoom(String name, Long id);
 
     List<Messages> getAllMessagesOfRoom(String name);
 }

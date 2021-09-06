@@ -8,6 +8,8 @@ public interface AccountService {
 
     List<Accounts> getAllUsers(Long id);
 
+    List<Accounts> getUsersForPut(Long id);
+
     List<Accounts> getAllUser();
 
     void signUp(Accounts form);
